@@ -3,6 +3,11 @@
 - [Knotlet](#knotlet)
   - [Example](#example)
   - [Specification](#specification)
+    - [Syntax](#syntax)
+    - [Predicate operators](#predicate-operators)
+      - [Inverse](#inverse)
+      - [Symetrical](#symetrical)
+      - [Union](#union)
     - [JSON-LD Considerations](#json-ld-considerations)
 
 Knotlet is a tiny language for writing RDF graphs. It's designed to be easy to write, in a similar way to how [KRML](https://github.com/edwardanderson/krml) is intended to be easy to read.
@@ -11,17 +16,13 @@ Knotlet supports RDF conventions for CURIEs, literal refification, languages, da
 
 ## Example
 
-This example demonstrates almost all the features of the language.
-
 ```text
-.
-  name
-    > John Lennon
+John
   a
     schema:Person
   date of birth
     > 1940-10-09 |xsd:date
-  foaf:knows
+  foaf:knows |union
     Paul
     George
     Ringo
@@ -55,11 +56,8 @@ This is equivalent to the following JSON-LD:
       "_label": "rdfs:label"
     }
   ],
-  "name": [
-    {
-      "@value": "John Lennon"
-    }
-  ],
+  "@id": "_:John",
+  "_label": "John",
   "@type": "schema:Person",
   "date_of_birth": [
     {
@@ -70,15 +68,48 @@ This is equivalent to the following JSON-LD:
   "foaf:knows": [
     {
       "@id": "_:Paul",
-      "_label": "Paul"
+      "_label": "Paul",
+      "foaf:knows": [
+        {
+            "@id": "_:John"
+        },
+        {
+            "@id": "_:George"
+        },
+        {
+            "@id": "_:Ringo"
+        }
+      ]
     },
     {
       "@id": "_:George",
-      "_label": "George"
+      "_label": "George",
+      "foaf:knows": [
+        {
+            "@id": "_:John"
+        },
+        {
+            "@id": "_:Paul"
+        },
+        {
+            "@id": "_:Ringo"
+        }
+      ]
     },
     {
       "@id": "_:Ringo",
-      "_label": "Ringo"
+      "_label": "Ringo",
+      "foaf:knows": [
+        {
+            "@id": "_:John"
+        },
+        {
+            "@id": "_:Paul"
+        },
+        {
+            "@id": "_:George"
+        }
+      ]
     }
   ],
   "mother": [
@@ -123,6 +154,8 @@ This is equivalent to the following JSON-LD:
 
 ## Specification
 
+### Syntax
+
 | Knotlet           | Turtle                 | Description                               |
 |-                  |-                       |-                                          |
 | `.`               | `[]`                   | Anonymous resource                        |
@@ -158,6 +191,103 @@ This is equivalent to the following JSON-LD:
 
   _:Bar rdfs:label "Bar" .
   ```
+
+### Predicate operators
+
+Predicate operators are syntactic sugar for materialising inverse, symetrical and product relationships.
+
+#### Inverse
+
+The `|inverse` token materialises a relationship between object and subject resources.
+
+```
+The Beatles
+  memberOf |inverse
+    John
+    Paul
+    George
+    Ringo
+```
+
+```turtle
+@prefix : <http://example.org/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+_:The_Beatles rdfs:label "The Beatles" .
+
+[] rdfs:label "John" ;
+  :memberOf _:The_Beatles .
+
+[] rdfs:label "Paul" ;
+  :memberOf _:The_Beatles .
+
+[] rdfs:label "George" ;
+  :memberOf _:The_Beatles .
+
+[] rdfs:label "Ringo" ;
+  :memberOf _:The_Beatles .
+```
+
+#### Symetrical
+
+The `|symetrical` token materialises a relationship between both the subject and object, and the object and subject.
+
+```
+John
+  knows |symetrical
+    Paul
+    George
+    Ringo
+```
+
+```turtle
+@prefix : <http://example.org/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+_:John rdfs:label "John" ;
+  :knows _:Paul , _:George , _:Ringo .
+
+_:Paul rdfs:label "Paul" ;
+  :knows _:John .
+
+_:George rdfs:label "George" ;
+  :knows _:John .
+
+_:Ringo rdfs:label "Ringo" ;
+  :knows _:John .
+```
+
+#### Union
+
+The `|union` token materialises irreflexive symetrical relationships between members of the union of subject and object resources.
+
+```
+John
+  knows |union
+    Paul
+    George
+    Ringo
+```
+
+```turtle
+@prefix : <http://example.org/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+_:John rdfs:label "John" ;
+  :knows _:Paul , _:George , _:Ringo .
+
+_:Paul rdfs:label "Paul" ;
+  :knows _:John , _:George , _:Ringo .
+
+_:George rdfs:label "George" ;
+  :knows _:John , _:Paul , _:Ringo .
+
+_:Ringo rdfs:label "Ringo" ;
+  :knows _:John , _:Paul , _:George .
+```
 
 ### JSON-LD Considerations
 
