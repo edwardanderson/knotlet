@@ -4,7 +4,7 @@
   - [Example](#example)
   - [Specification](#specification)
     - [Syntax](#syntax)
-    - [Predicate operators](#predicate-operators)
+    - [Predicate Operators](#predicate-operators)
       - [Inverse](#inverse)
       - [Symetrical](#symetrical)
       - [Union](#union)
@@ -12,7 +12,7 @@
 
 Knotlet is a tiny language for writing RDF graphs. It's designed to be easy to write, in a similar way to how [KRML](https://github.com/edwardanderson/krml) is intended to be easy to read.
 
-Knotlet supports RDF conventions for CURIEs, literal refification, languages, datatypes and sequences.
+Knotlet supports RDF conventions for CURIEs, literal reification, languages, datatypes and sequences.
 
 ## Example
 
@@ -192,7 +192,7 @@ This is equivalent to the following JSON-LD:
   _:Bar rdfs:label "Bar" .
   ```
 
-### Predicate operators
+### Predicate Operators
 
 Predicate operators are syntactic sugar for materialising inverse, symetrical and product relationships.
 
