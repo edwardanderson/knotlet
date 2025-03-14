@@ -5,13 +5,13 @@
   - [Specification](#specification)
     - [JSON-LD Considerations](#json-ld-considerations)
 
-Knotlet is a tiny language for writing RDF graphs. It's designed to be easy to write, in a similar way to how [KRML](https://github.com/edwardanderson/krml) is easy to read.
+Knotlet is a tiny language for writing RDF graphs. It's designed to be easy to write, in a similar way to how [KRML](https://github.com/edwardanderson/krml) is intended to be easy to read.
 
 Knotlet supports RDF conventions for CURIEs, literal refification, languages, datatypes and sequences.
 
 ## Example
 
-This example demonstrates almost all the syntax features of the language.
+This example demonstrates almost all the features of the language.
 
 ```text
 .
@@ -41,6 +41,8 @@ This example demonstrates almost all the syntax features of the language.
       name
         > 小野 洋子 |jp
 ```
+
+This is equivalent to the following JSON-LD:
 
 ```json
 {
@@ -135,6 +137,8 @@ This example demonstrates almost all the syntax features of the language.
 | `> 123 \|xsd:int` | `"123"^^xsd:int`       | Literal with globally recognised datatype |
 | `- abc`           | `( _:abc )`            | Sequence                                  |
 
+- Significant whitespace indentation relates resources vertically
+- One resource per line
 - A globally recognised resource is a [CURIE](https://en.wikipedia.org/wiki/CURIE) which uses a [prefix.cc](https://prefix.cc/) key
 - Literals with outgoing relationships are automatically reified
 
